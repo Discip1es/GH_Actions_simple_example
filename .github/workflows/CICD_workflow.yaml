@@ -1,0 +1,40 @@
+name: CI/CD Pipeline for MyDotNetProject
+
+# Указываем события, которые будут запускать этот workflow
+on:
+  push:
+    branches:
+      - main  # Запуск при коммите в ветку main
+  pull_request:
+    branches:
+      - main  # Запуск при создании Pull Request в ветку main
+
+# Определяем задачи (jobs), которые будут выполнены
+jobs:
+  build:
+    # Указываем операционную систему для выполнения задач
+    runs-on: ubuntu-latest
+
+    # Шаги, которые будут выполнены
+    steps:
+      # Шаг 1: Клонирование репозитория
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Шаг 2: Установка .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'  # Устанавливаем последнюю версию .NET 8.0
+
+      # Шаг 3: Восстановление зависимостей
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Шаг 4: Сборка проекта
+      - name: Build project
+        run: dotnet build --configuration Release --no-restore
+
+      # Шаг 5: Запуск тестов
+      - name: Run tests
+        run: dotnet test --no-restore --verbosity normal
